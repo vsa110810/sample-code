@@ -1,0 +1,98 @@
+package com.ae.adec;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.chrome.handler.ChromedriverHandler;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+
+public class CapabilitiesHelper {
+
+	// static WebDriver driver;
+
+	public static AppiumDriver driver;
+	public static WebDriverWait webDriverWait;
+	
+	public static final String CONTEXT_NATIVE_APP = "NATIVE";
+	public static final String CONTEXT_WEB_VIEW = "WEBVIEW";
+	private static final String deviceID = null;
+
+	public static void capabilityInitialize() throws MalformedURLException {
+
+		DesiredCapabilities capabilities = new DesiredCapabilities();
+		capabilities.setCapability("BROWSER_NAME", "Android");
+		capabilities.setCapability("VERSION", "6.0.1");
+		capabilities.setCapability("deviceName", "Moto G (3rd Generation)");
+		capabilities.setCapability("platformName", "Android");
+		capabilities.setCapability("appPackage", "com.ae.adec");
+		capabilities.setCapability("appActivity", "com.ae.adec.MainActivity");
+		capabilities.setCapability("nativeWebTap", true);
+		
+		//capabilities.setCapability("serial", deviceID);
+		//capabilities.setCapability("newCommandTimeout", "120");
+		//capabilities.setCapability("chromedriverExecutable", "C:\\Users\\admin\\Downloads\\chromedriver_win32\\chromedriver.exe");
+		//driver = new AndroidDriver(new URL("http://localhost:4723/wd/hub"), capabilities);
+		// driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"),
+		// capabilities);
+		
+		driver = new AndroidDriver<WebElement>(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+
+//		driver.manage().timeouts().implicitlyWait(80, TimeUnit.SECONDS);
+		
+//		String contextName = CapabilitiesHelper.getAppContext(CapabilitiesHelper.CONTEXT_WEB_VIEW);
+//		System.out.println(contextName);
+		
+//		Set contextNames = CapabilitiesHelper.driver.getContextHandles();
+//		contextNames.contains(contextNames);
+//		System.out.println("Starting app"+contextNames);
+//		Iterator iterator = contextNames.iterator();
+//		
+//		while (iterator.hasNext()) {
+//			String type = (String) iterator.next();
+//			System.out.println(type);			
+//		}
+
+		/*Select context = new Select ((WebElement) driver.context("WEBVIEW_com.ae.adec"));
+context.selectByIndex(1);*/
+		webDriverWait = new WebDriverWait(CapabilitiesHelper.driver, 20);
+
+	}
+	
+	public static String getAppContext(String type) {
+		String contextName = "";
+		Set contextNameSets = CapabilitiesHelper.driver.getContextHandles();
+		Iterator iterator = contextNameSets.iterator();		
+		while (iterator.hasNext()) {
+			contextName = (String) iterator.next();
+			if (contextName.contains(type)) {
+				break;
+			}
+		}
+		
+		return contextName;
+	}
+
+	public static void checkLanguageSwitch() {
+		try {
+			// Click on "English" language
+			if (CapabilitiesHelper.driver.findElementByXPath("//*[@id=\"language-switch\"]/button[1]").isDisplayed()) {
+				CapabilitiesHelper.driver.findElementByXPath("//*[@id=\"language-switch\"]/button[1]").click();
+			}
+		} catch (Exception ex) {
+			System.out.println("No Language Switch displayed");
+		}
+	}
+}
